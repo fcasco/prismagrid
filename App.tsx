@@ -33,11 +33,6 @@ const App: React.FC = () => {
       setConfig(prev => ({
         ...prev,
         ...result,
-        // Ensure rows/cols stay consistent unless we explicitly want AI to change grid dimensions too,
-        // but for UI stability, keeping user preferred dimensions or a standard set is often better.
-        // The service returns defaults, but let's respect user's current rows/cols if we want.
-        // Actually, let's let the AI set the parameters but maybe keep the size standard 8x8 
-        // if the AI result didn't specify them (the service currently hardcodes rows/cols in return).
         rows: prev.rows, // Keep user's grid size
         cols: prev.cols
       }));
@@ -58,6 +53,12 @@ const App: React.FC = () => {
         onChange={setConfig} 
         onGenerate={handleGenerate}
         isGenerating={isGenerating}
+        currentName={themeName}
+        currentDescription={themeDesc}
+        onUpdateMetadata={(name, desc) => {
+          setThemeName(name);
+          setThemeDesc(desc);
+        }}
       />
       <main className="flex-1 h-full relative">
         <GridDisplay 

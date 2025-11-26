@@ -24,6 +24,14 @@ export interface ThemeSuggestion {
   config: GridConfig;
 }
 
+export interface SavedTheme {
+  id: string;
+  name: string;
+  description: string;
+  config: GridConfig;
+  createdAt: number;
+}
+
 export const DEFAULT_CONFIG: GridConfig = {
   baseHue: 200,
   baseSat: 70,
