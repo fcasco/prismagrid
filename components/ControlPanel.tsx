@@ -4,8 +4,6 @@ import { GridConfig, ColumnMode, SavedTheme } from '../types';
 interface ControlPanelProps {
   config: GridConfig;
   onChange: (newConfig: GridConfig) => void;
-  onGenerate: (prompt: string) => void;
-  isGenerating: boolean;
   currentName: string;
   currentDescription: string;
   onUpdateMetadata: (name: string, description: string) => void;
@@ -14,13 +12,10 @@ interface ControlPanelProps {
 const ControlPanel: React.FC<ControlPanelProps> = ({ 
   config, 
   onChange, 
-  onGenerate, 
-  isGenerating,
   currentName,
   currentDescription,
   onUpdateMetadata
 }) => {
-  const [prompt, setPrompt] = useState('');
   const [savedThemes, setSavedThemes] = useState<SavedTheme[]>([]);
   const [showLibrary, setShowLibrary] = useState(false);
 
@@ -38,13 +33,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   const handleChange = (key: keyof GridConfig, value: number | string) => {
     onChange({ ...config, [key]: value });
-  };
-
-  const handleGenSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (prompt.trim()) {
-      onGenerate(prompt);
-    }
   };
 
   const handleSaveTheme = () => {
@@ -85,46 +73,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         
-        {/* AI Generator Section */}
-        <div className="p-6 border-b border-gray-800 bg-gray-850">
-          <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-4">
-            PrismaGrid AI
-          </h2>
-          <form onSubmit={handleGenSubmit} className="space-y-3">
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1">Describe a mood or theme</label>
-              <input
-                type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="e.g., Cyberpunk Neon, Pastel Spring..."
-                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={handleGenSubmit}
-              disabled={isGenerating || !prompt.trim()}
-              className={`w-full py-2 px-4 rounded-md font-medium text-sm transition-all flex items-center justify-center
-                ${isGenerating || !prompt.trim() 
-                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
-                  : 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg hover:shadow-purple-500/25'}`}
-            >
-              {isGenerating ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Dreaming...
-                </>
-              ) : 'Generate Theme'}
-            </button>
-          </form>
-        </div>
-
         {/* Current Theme Info & Save */}
-        <div className="p-6 pb-2 space-y-3">
+        <div className="p-6 pb-2 space-y-3 pt-8">
           <div>
             <label className="block text-xs font-medium text-gray-400 mb-1">Theme Name</label>
             <div className="flex gap-2">
@@ -137,12 +87,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               />
               <button 
                 onClick={handleSaveTheme}
-                className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition-colors"
+                className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition-colors flex items-center gap-1 font-medium text-xs uppercase tracking-wide"
                 title="Save to Library"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
                 </svg>
+                Save
               </button>
             </div>
           </div>
@@ -229,7 +180,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleChange('columnMode', 'lightness')}
-                    className={`px-4 py-2 text-xs font-medium rounded-l-lg border border-gray-600 
+                    className={`px-4 py-2 text-xs font-medium rounded-l-lg border border-gray-600 flex-1
                     ${config.columnMode === 'lightness' ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
                   >
                     Lightness
@@ -237,7 +188,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleChange('columnMode', 'saturation')}
-                    className={`px-4 py-2 text-xs font-medium rounded-r-lg border border-gray-600
+                    className={`px-4 py-2 text-xs font-medium rounded-r-lg border border-gray-600 flex-1
                     ${config.columnMode === 'saturation' ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
                   >
                     Saturation

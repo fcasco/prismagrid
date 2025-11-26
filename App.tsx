@@ -1,15 +1,14 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import ControlPanel from './components/ControlPanel';
 import GridDisplay from './components/GridDisplay';
-import { GridConfig, DEFAULT_CONFIG } from './types';
-import { generateGridColors } from './utils/color';
-import { generateThemeFromPrompt } from './services/geminiService';
+import { GridConfig } from './types';
+import { generateGridColors, generateRandomConfig } from './utils/color';
 
 const App: React.FC = () => {
-  const [config, setConfig] = useState<GridConfig>(DEFAULT_CONFIG);
+  // Initialize with a random configuration on app start
+  const [config, setConfig] = useState<GridConfig>(() => generateRandomConfig());
   const [themeName, setThemeName] = useState<string>('');
   const [themeDesc, setThemeDesc] = useState<string>('');
-  const [isGenerating, setIsGenerating] = useState(false);
 
   // Re-generate grid whenever config changes
   const grid = useMemo(() => {
@@ -26,33 +25,11 @@ const App: React.FC = () => {
     );
   }, [config]);
 
-  const handleGenerate = async (prompt: string) => {
-    setIsGenerating(true);
-    try {
-      const result = await generateThemeFromPrompt(prompt);
-      setConfig(prev => ({
-        ...prev,
-        ...result,
-        rows: prev.rows, // Keep user's grid size
-        cols: prev.cols
-      }));
-      setThemeName(result.name);
-      setThemeDesc(result.description);
-    } catch (error) {
-      console.error("Failed to generate theme", error);
-      alert("Failed to generate theme. Please try again.");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   return (
     <div className="flex h-screen w-screen bg-black text-white overflow-hidden">
       <ControlPanel 
         config={config} 
         onChange={setConfig} 
-        onGenerate={handleGenerate}
-        isGenerating={isGenerating}
         currentName={themeName}
         currentDescription={themeDesc}
         onUpdateMetadata={(name, desc) => {

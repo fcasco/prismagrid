@@ -1,4 +1,4 @@
-import { HSL } from '../types';
+import { HSL, GridConfig, ColumnMode } from '../types';
 
 export function hslToHex({ h, s, l }: HSL): string {
   l /= 100;
@@ -37,27 +37,11 @@ export function generateGridColors(
       if (columnMode === 'lightness') {
         // Vary lightness across columns
         currentLight = Math.max(0, Math.min(100, baseLight + (c * lightStep)));
-        // Saturation stays constant per row (or could be varied if we added row-sat-step, but keeping simple)
-        // Optionally, we could let saturation vary by row as well. 
-        // Based on prompt "hue changing from row to row", "lightness/saturation changing from column to column"
-        // We stick to the config. 
-        // Let's also apply satStep to rows if the user wants? 
-        // For now, let's keep Sat constant for row unless columnMode is saturation.
-        
-        // Wait, prompt says "lightness/saturation changing from column to column".
-        // It implies one dimension changes per column.
-        
-        // Let's implement row = hue change.
-        // Let's apply satStep if we are NOT in saturation mode? No, the prompt implies column affects one of them.
       } else {
         // Vary saturation across columns
         currentSat = Math.max(0, Math.min(100, baseSat + (c * satStep)));
       }
 
-      // We can also apply the "secondary" step to the rows if we want complexity, 
-      // but let's stick to the prompt's main axis.
-      // Ideally, a comprehensive generator might step Hue by Row, and (L or S) by Col.
-      
       rowColors.push({
         h: Math.round(currentHue),
         s: Math.round(currentSat),
@@ -67,6 +51,27 @@ export function generateGridColors(
     grid.push(rowColors);
   }
   return grid;
+}
+
+export function generateRandomConfig(): GridConfig {
+  const modes: ColumnMode[] = ['lightness', 'saturation'];
+  const mode = modes[Math.floor(Math.random() * modes.length)];
+  
+  // Randomize direction and magnitude of steps
+  const hueStepDir = Math.random() > 0.5 ? 1 : -1;
+  const valStepDir = Math.random() > 0.5 ? 1 : -1;
+
+  return {
+    baseHue: Math.floor(Math.random() * 360),
+    baseSat: Math.floor(Math.random() * 40) + 40, // 40-80% safe range
+    baseLight: Math.floor(Math.random() * 40) + 30, // 30-70% safe range
+    hueStep: (Math.floor(Math.random() * 20) + 10) * hueStepDir,
+    satStep: (Math.floor(Math.random() * 10) + 5) * valStepDir,
+    lightStep: (Math.floor(Math.random() * 10) + 5) * valStepDir,
+    rows: 8,
+    cols: 8,
+    columnMode: mode,
+  };
 }
 
 export function copyToClipboard(text: string): Promise<void> {

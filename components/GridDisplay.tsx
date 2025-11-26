@@ -52,16 +52,16 @@ const GridDisplay: React.FC<GridDisplayProps> = ({ grid, themeName, themeDescrip
                     style={{ backgroundColor: hex }}
                     title={`H:${hsl.h} S:${hsl.s}% L:${hsl.l}%`}
                   >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-1">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-1 leading-tight">
                       <span 
                         className="text-[10px] font-mono uppercase font-bold tracking-wider transition-all" 
                         style={{ color: textColor }}
                       >
                         {isCopied ? 'Copied!' : hex}
                       </span>
-                      {/* Detailed info on hover */}
+                      {/* Detailed info always visible */}
                       <span 
-                        className="text-[9px] mt-0.5 opacity-0 group-hover:opacity-80 font-mono transition-opacity duration-200 whitespace-nowrap" 
+                        className="text-[8px] sm:text-[9px] mt-0.5 font-mono whitespace-nowrap opacity-90" 
                         style={{ color: textColor }}
                       >
                          {hsl.h}° {hsl.s}% {hsl.l}%
