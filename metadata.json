@@ -1,0 +1,5 @@
+{
+  "name": "PrismaGrid - Parametric Color Generator",
+  "description": "A professional color grid generator that varies hue across rows and lightness/saturation across columns. Features AI-powered theme suggestions.",
+  "requestFramePermissions": []
+}
